@@ -1,34 +1,45 @@
 <template>
 <div>
-  {{ result }}
-  
-  sample post
-  
+  <v-card>
+    <no-ssr>
+    <ul>
+      <li v-for="(item, index) in result.edges">
+        {{ item }}
+        <v-btn @click="choose(item)">choose</v-btn>
+      </li>
+    </ul>
+    </no-ssr>
+  </v-card>
+
   <v-flex xs12 sm6 md3>
     <v-text-field
-      label="Regular"
+      label="Title"
       v-model="events.title"
       ></v-text-field>
   </v-flex>
   <v-flex xs12 sm6 md3>
     <v-text-field
-      label="Regular"
+      label="Description"
       v-model="events.description"
       ></v-text-field>
   </v-flex>
   <v-flex xs12 sm6 md3>
     <v-text-field
-      label="Regular"
+      label="Link"
       v-model="events.link"
       ></v-text-field>
   </v-flex>
   <v-btn @click="post">
-    go
+    patch
+  </v-btn>
+  <v-btn @click="post">
+    post
   </v-btn>
 </div>
 </template>
 
 <script>
+/* eslint-disable */
 import {
   FETCH_EVENTS,
   POST_EVENT
@@ -46,12 +57,29 @@ export default {
         this.result = data.data.all_events
       })
     },
+    async choose (item) {
+      this.events = Object.assign({}, this.events, item.node)
+    },
+    async update () {
+      console.log(this.events)
+    },
     async post () {
       this.$apollo.mutate({
         mutation: POST_EVENT,
-        variables: this.events
-      }).then(data => {
-        console.log(data.data.crud_event.event)
+        variables: this.events,
+        update: (store, { data: { crudEvent } }) => {
+          // i update nimo ang cache murag murations sa vuex
+          const todoQuery = {
+            query: FETCH_EVENTS
+          }
+          let payload = {
+            node: crudEvent.event,
+            __typename: 'GraphEventsTypeEdge' 
+          }
+          const todoData = store.readQuery(todoQuery)
+          todoData.all_events.edges.push(payload)
+          store.writeQuery({ ...todoQuery, data: payload })
+        }
       }).catch(data => {
         console.log(data)
       })
