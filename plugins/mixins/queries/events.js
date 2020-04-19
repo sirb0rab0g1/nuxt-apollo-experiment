@@ -13,14 +13,16 @@ export const FETCH_EVENTS = gql` query tagList {
   }
 }`
 
-export const POST_EVENT = gql`
+export const CREATE_UPDATE_EVENT = gql`
   mutation (
+    $id: ID,
     $title: String,
     $description: String,
     $link: String
   ) {
-  crudEvent(
+  CreateUpdateEvent(
     event_data: {
+      id: $id,
       title:$title,
       description:$description,
       link:$link,
@@ -30,6 +32,21 @@ export const POST_EVENT = gql`
       title,
       description,
       link,
+      id
+    }
+  }
+}`
+
+export const DELETE_EVENT = gql`
+  mutation (
+    $id: ID
+  ) {
+  CreateUpdateEvent(
+    event_data: {
+      id: $id
+    }
+  ) {
+    event {
       id
     }
   }

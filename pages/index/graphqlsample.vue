@@ -29,11 +29,14 @@
       v-model="events.link"
       ></v-text-field>
   </v-flex>
-  <v-btn @click="post">
-    patch
+  <v-btn @click="update">
+    update
   </v-btn>
   <v-btn @click="post">
     post
+  </v-btn>
+  <v-btn @click="remove">
+    delete
   </v-btn>
 </div>
 </template>
@@ -42,7 +45,8 @@
 /* eslint-disable */
 import {
   FETCH_EVENTS,
-  POST_EVENT
+  CREATE_UPDATE_EVENT,
+  DELETE_EVENT
 } from '~/plugins/mixins/queries/events'
 
 export default {
@@ -61,19 +65,52 @@ export default {
       this.events = Object.assign({}, this.events, item.node)
     },
     async update () {
-      console.log(this.events)
-    },
-    async post () {
       this.$apollo.mutate({
-        mutation: POST_EVENT,
+        mutation: CREATE_UPDATE_EVENT,
         variables: this.events,
-        update: (store, { data: { crudEvent } }) => {
+        /* update: (store, { data: { CreateUpdateEvent } }) => {
           // i update nimo ang cache murag murations sa vuex
           const todoQuery = {
             query: FETCH_EVENTS
           }
           let payload = {
-            node: crudEvent.event,
+            node: CreateUpdateEvent.event,
+            __typename: 'GraphEventsTypeEdge' 
+          }
+          console.log(payload)
+          
+          const todoData = store.readQuery(todoQuery)
+          todoData.all_events.edges.push(payload)
+          store.writeQuery({ ...todoQuery, data: payload })
+          
+        }*/
+      }).then(data => {
+        console.log(data)
+      }).catch(data => {
+        console.log(data)
+      })
+    },
+    async remove () {
+      this.$apollo.mutate({
+        mutation: DELETE_EVENT,
+        variables: this.events,
+      }).then(data => {
+        console.log(data)
+      }).catch(data => {
+        console.log(data)
+      })
+    },
+    async post () {
+      this.$apollo.mutate({
+        mutation: CREATE_UPDATE_EVENT,
+        variables: this.events,
+        update: (store, { data: { CreateUpdateEvent } }) => {
+          // i update nimo ang cache murag murations sa vuex
+          const todoQuery = {
+            query: FETCH_EVENTS
+          }
+          let payload = {
+            node: CreateUpdateEvent.event,
             __typename: 'GraphEventsTypeEdge' 
           }
           const todoData = store.readQuery(todoQuery)
