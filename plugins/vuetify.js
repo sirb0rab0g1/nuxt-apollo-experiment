@@ -5,7 +5,7 @@ import Vuetify, {
   VFooter,
   VToolbar
 } from 'vuetify/lib'
-import { Ripple } from 'vuetify/lib/directives'
+import { Ripple, Scroll } from 'vuetify/lib/directives'
 
 Vue.use(Vuetify, {
   components: {
@@ -15,6 +15,7 @@ Vue.use(Vuetify, {
     VToolbar
   },
   directives: {
-    Ripple
+    Ripple,
+    Scroll
   }
 })

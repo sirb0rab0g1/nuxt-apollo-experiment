@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
 
-export const FETCH_EVENTS = gql` query tagList {
-  all_events {
+export const FETCH_EVENTS = gql` query tagList ($getid: ID, $first: Int, $skip: Int) {
+  all_events (getid: $getid, first: $first, skip: $skip){
     edges {
       node{
         id,

@@ -2,42 +2,26 @@
 <div>
   <v-card>
     <no-ssr>
-    <ul>
-      <li v-for="(item, index) in result.edges">
-        {{ item }}
-        <v-btn @click="choose(item)">choose</v-btn>
-      </li>
-    </ul>
+      <v-container
+        id="scroll-target"
+        class="scroll-y">
+        <v-layout
+          v-scroll:#scroll-target="onScroll"
+          style="min-height: 100px; max-height: 320px;"> 
+            <ul>
+              <li v-for="(item, index) in result">
+                {{ item }}
+                <v-btn @click="choose(item)">choose</v-btn>
+                <v-btn @click="remove(item)">remove</v-btn>
+              </li>
+            </ul>
+        </v-layout>
+      </v-container>
     </no-ssr>
   </v-card>
 
-  <v-flex xs12 sm6 md3>
-    <v-text-field
-      label="Title"
-      v-model="events.title"
-      ></v-text-field>
-  </v-flex>
-  <v-flex xs12 sm6 md3>
-    <v-text-field
-      label="Description"
-      v-model="events.description"
-      ></v-text-field>
-  </v-flex>
-  <v-flex xs12 sm6 md3>
-    <v-text-field
-      label="Link"
-      v-model="events.link"
-      ></v-text-field>
-  </v-flex>
-  <v-btn @click="update">
-    update
-  </v-btn>
-  <v-btn @click="post">
-    post
-  </v-btn>
-  <v-btn @click="remove">
-    delete
-  </v-btn>
+  <v-btn @click="goTo('/editevent')"> CREATE EVENT </v-btn>
+
 </div>
 </template>
 
@@ -48,47 +32,27 @@ import {
   CREATE_UPDATE_EVENT,
   DELETE_EVENT
 } from '~/plugins/mixins/queries/events'
+import Global from '~/plugins/mixins/global'
+import EventApollo from '~/plugins/mixins/apollo/event_apollo'
 
 export default {
   data: () => ({
     result: [],
-    events: {}
+    events: {},
+    customSkip: 0
   }),
+  mixins: [Global, EventApollo],
   methods: {
     get () {
       let query = FETCH_EVENTS
-      return this.$apollo.query({ query: query }).then(data => {
-        this.result = data.data.all_events
+        this.$apollo.query({ query: query, variables: {first: 6, skip: this.customSkip} }).then(data => {
+        for (let item of data.data.all_events.edges) {
+          this.result.push(item)
+        }
       })
     },
-    async choose (item) {
-      this.events = Object.assign({}, this.events, item.node)
-    },
-    async update () {
-      this.$apollo.mutate({
-        mutation: CREATE_UPDATE_EVENT,
-        variables: this.events,
-        /* update: (store, { data: { CreateUpdateEvent } }) => {
-          // i update nimo ang cache murag murations sa vuex
-          const todoQuery = {
-            query: FETCH_EVENTS
-          }
-          let payload = {
-            node: CreateUpdateEvent.event,
-            __typename: 'GraphEventsTypeEdge' 
-          }
-          console.log(payload)
-          
-          const todoData = store.readQuery(todoQuery)
-          todoData.all_events.edges.push(payload)
-          store.writeQuery({ ...todoQuery, data: payload })
-          
-        }*/
-      }).then(data => {
-        console.log(data)
-      }).catch(data => {
-        console.log(data)
-      })
+    choose (item) {
+      this.goTo(`/editevent/${item.node.id}`)   
     },
     async remove () {
       this.$apollo.mutate({
@@ -100,26 +64,13 @@ export default {
         console.log(data)
       })
     },
-    async post () {
-      this.$apollo.mutate({
-        mutation: CREATE_UPDATE_EVENT,
-        variables: this.events,
-        update: (store, { data: { CreateUpdateEvent } }) => {
-          // i update nimo ang cache murag murations sa vuex
-          const todoQuery = {
-            query: FETCH_EVENTS
-          }
-          let payload = {
-            node: CreateUpdateEvent.event,
-            __typename: 'GraphEventsTypeEdge' 
-          }
-          const todoData = store.readQuery(todoQuery)
-          todoData.all_events.edges.push(payload)
-          store.writeQuery({ ...todoQuery, data: payload })
-        }
-      }).catch(data => {
-        console.log(data)
-      })
+    onScroll (e) { // lazy load purpose
+      let target = e.target
+      if (target.scrollTop + target.offsetHeight >= target.scrollHeight) {
+        this.customSkip += 6
+        this.get()
+        target.scrollTop = (target.scrollTop - 20)
+      }
     }
   },
   beforeRouteEnter (to, from, next) {
