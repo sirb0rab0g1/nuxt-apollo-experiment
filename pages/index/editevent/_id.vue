@@ -53,7 +53,7 @@ export default {
         update: (store, { data: { CreateUpdateEvent } }) => {
           const todoQuery = {
             query: FETCH_EVENTS,
-            variables: { first: 6, skip: 0 }
+            variables: { first: 6, skip: 0, title: '' }
           }
           let payload = {
             node: CreateUpdateEvent.event

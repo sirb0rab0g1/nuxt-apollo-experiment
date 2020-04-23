@@ -1,14 +1,14 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import sample from './modules/sample'
+import events from './modules/events'
 
 Vue.use(Vuex)
 
 const store = () => {
   return new Vuex.Store({
     modules: {
-      sample
+      events
     }
   })
 }
