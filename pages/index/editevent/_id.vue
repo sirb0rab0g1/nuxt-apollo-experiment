@@ -6,18 +6,21 @@
     <v-text-field
       label="Title"
       v-model="events.title"
+      :error-messages="errors.title"
       ></v-text-field>
   </v-flex>
   <v-flex xs12 sm6 md3>
     <v-text-field
       label="Description"
       v-model="events.description"
+      :error-messages="errors.description"
       ></v-text-field>
   </v-flex>
   <v-flex xs12 sm6 md3>
     <v-text-field
       label="Link"
       v-model="events.link"
+      :error-messages="errors.link"
       ></v-text-field>
   </v-flex>
   <v-btn @click="update">
@@ -36,24 +39,26 @@ import _ from 'lodash'
 
 export default {
   data: () => ({
-    events: {}
+    events: {},
+    errors: {}
   }),
   mixins: [Global],
   methods: {
     get () {
       let query = FETCH_EVENTS
-      this.$apollo.query({ query: query, variables: { getid: this.$nuxt._route.params.id, first: 6, skip: this.customSkip } }).then(data => {
+      this.$apollo.query({ query: query, variables: { getid: this.$nuxt._route.params.id } }).then(data => {
         this.events = data.data.all_events.edges[0].node
       })
     },
-    async update () {
+    update () {
+      console.log(this.events)
       this.$apollo.mutate({
         mutation: CREATE_UPDATE_EVENT,
         variables: this.events,
         update: (store, { data: { CreateUpdateEvent } }) => {
           const todoQuery = {
             query: FETCH_EVENTS,
-            variables: { first: 6, skip: 0, title: '' }
+            variables: { getid: this.$nuxt._route.params.id }
           }
           let payload = {
             node: CreateUpdateEvent.event
@@ -66,8 +71,11 @@ export default {
       }).then(data => {
         alert('event updated')
         this.goTo('/graphqlsample')
-      }).catch(data => {
-        console.log(data)
+      }).catch(errors => {
+        if (!_.isUndefined(errors.graphQLErrors)) {
+          let err = errors.graphQLErrors.map(x => x.message)[0]
+          this.errors = JSON.parse(err)
+        }
       })
     }
   },
