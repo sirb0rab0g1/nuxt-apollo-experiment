@@ -6,7 +6,7 @@
         <v-text-field
           label="Search"
           v-model="gosearch"
-          @keyup.enter="get"
+          @keyup.enter="search"
         ></v-text-field>
       </v-flex>
       <v-container
@@ -14,7 +14,7 @@
         class="scroll-y">
         <v-layout
           v-scroll:#scroll-target="onScroll"
-          style="min-height: 100px; max-height: 320px;"> 
+          style="min-height: 320px; max-height: 320px;"> 
             <ul>
               <li v-for="(item, index) in result">
                 {{ item }}
@@ -28,9 +28,6 @@
   </v-card>
 
   <v-btn @click="goTo('/editevent')"> CREATE EVENT </v-btn>
-
-  {{ filter }}
-  {{ result.length }}
 </div>
 </template>
 
@@ -42,6 +39,7 @@ import {
   DELETE_EVENT
 } from '~/plugins/mixins/queries/events'
 import Global from '~/plugins/mixins/global'
+import Constants from '~/plugins/mixins/constants'
 import EventApollo from '~/plugins/mixins/apollo/event_apollo'
 import _ from 'lodash'
 import { mapGetters, mapMutations } from 'vuex'
@@ -51,51 +49,35 @@ export default {
     result: [],
     events: {},
     gosearch: ''
-    /* customSkip: 0,
-    somethingfilter: {
-      first: 6
-    } */
   }),
-  mixins: [Global, EventApollo],
+  mixins: [
+    Constants,
+    Global,
+    EventApollo
+  ],
   computed: {
-    ...mapGetters('events', ['filter'])
+    ...mapGetters('events', ['filterhistory'])
   },
   methods: {
-    ...mapMutations('events', ['SET_FILTER']),
+    ...mapMutations('events', ['SET_NEW_FILTER_HISTORY', 'RESET_EVENT_STATE']),
     search () {
-      /* this.customSkip = 0
-      this.$set(this.filter, 'skip', this.customSkip)
+      this.result = []
+      this.filter = {first: 6, skip: 0}
       this.$set(this.filter, 'title', this.gosearch)
-      let query = FETCH_EVENTS
-      this.$apollo.query({
-        query: query,
-        variables: this.filter,
-        update: (store, { data: { CreateUpdateEvent } }) => {
-          const todoQuery = {
-            query: FETCH_EVENTS,
-            variables: this.filter
-          }
-          let payload = {
-            node: CreateUpdateEvent.event
-          }
-          const todoData = store.readQuery(todoQuery)
-          todoData.all_events.edges = payload 
-          store.writeQuery({ ...todoQuery, data: payload })
-        }
-      }).then(data => {
-        this.result = data.data.all_events.edges
-      }) */
+      this.get()
     },
     get () {
       let query = FETCH_EVENTS
-      // this.$set(this.filter, 'skip', this.filter.ski)
-      this.$set(this.filter, 'title', this.gosearch)
+      let find = _.find(this.filterhistory, this.filter)
+      if (_.isUndefined(find)) {
+        this.SET_NEW_FILTER_HISTORY(this.filter)
+      }
       this.$apollo.query({
         query: query,
         variables: this.filter
       }).then(data => {
         for (let item of data.data.all_events.edges) {
-          this.result.push(item) // data reactive 
+          this.result.push(item) // data reactive
         }
       })
     },
@@ -112,12 +94,10 @@ export default {
         console.log(data)
       })
     },
-    onScroll (e) { // lazy load purpose
+    onScroll (e) {
       let target = e.target
       if (target.scrollTop + target.offsetHeight >= target.scrollHeight) {
-        this.$set(this.filter, 'skip', this.filter.skip += 6)
-        this.SET_FILTER(this.filter)
-        // this.customSkip += 6
+        this.filter.skip += 6
         this.get()
         target.scrollTop = (target.scrollTop - 20)
       }
@@ -125,6 +105,7 @@ export default {
   },
   beforeRouteEnter (to, from, next) {
     next(vm => {
+      vm.RESET_EVENT_STATE()
       vm.get()
     })
   }

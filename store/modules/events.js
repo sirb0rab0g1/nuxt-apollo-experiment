@@ -4,7 +4,8 @@ const initialState = () => {
       first: 6,
       skip: 0,
       title: ''
-    }
+    },
+    filterhistory: []
   }
 }
 const state = initialState()
@@ -12,6 +13,9 @@ const state = initialState()
 const mutations = {
   SET_FILTER (state, payload) {
     state.filter = Object.assign({}, state.filter, payload)
+  },
+  SET_NEW_FILTER_HISTORY (state, payload) {
+    state.filterhistory.push(payload)
   },
   RESET_EVENT_STATE (state) {
     /*
@@ -24,7 +28,8 @@ const mutations = {
 }
 
 const getters = {
-  filter: state => state.filter
+  filter: state => state.filter,
+  filterhistory: state => state.filterhistory
 }
 
 export default {

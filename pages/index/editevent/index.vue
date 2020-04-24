@@ -44,7 +44,7 @@ export default {
   }),
   mixins: [Global],
   computed: {
-    ...mapGetters('events', ['filter'])
+    ...mapGetters('events', ['filterhistory'])
   },
   methods: {
     ...mapMutations('events', ['SET_FILTER', 'RESET_EVENT_STATE']),
@@ -53,17 +53,20 @@ export default {
         mutation: CREATE_UPDATE_EVENT,
         variables: this.events,
         update: (store, { data: { CreateUpdateEvent } }) => {
-          // wala ni siya na fetch sa db gi fetch lang ni siya sa cache
-          const todoQuery = {
-            query: FETCH_EVENTS,
-            variables: this.filter
-          }
-          let payload = {
-            node: CreateUpdateEvent.event
-          }
-          const todoData = store.readQuery(todoQuery)
-          todoData.all_events.edges.unshift(payload)
-          store.writeQuery({ ...todoQuery, data: payload })
+          _.forEach(this.filterhistory, function (value, key) {
+            if (value.skip === 0) {
+              const todoQuery = {
+                query: FETCH_EVENTS,
+                variables: value
+              }
+              let payload = {
+                node: CreateUpdateEvent.event
+              }
+              const todoData = store.readQuery(todoQuery)
+              todoData.all_events.edges.unshift(payload)
+              store.writeQuery({ ...todoQuery, data: payload })
+            }
+          })
         }
       }).then(data => {
         alert('event created')
