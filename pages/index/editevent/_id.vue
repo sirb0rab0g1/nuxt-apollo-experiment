@@ -51,7 +51,6 @@ export default {
       })
     },
     update () {
-      console.log(this.events)
       this.$apollo.mutate({
         mutation: CREATE_UPDATE_EVENT,
         variables: this.events,
