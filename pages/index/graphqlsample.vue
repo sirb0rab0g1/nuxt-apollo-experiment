@@ -1,6 +1,6 @@
 <template>
 <div>
-  <v-card>
+  <v-card style="height: 600px;">
     <no-ssr>
       <v-flex xs12 sm6 md3>
         <v-text-field
@@ -14,14 +14,33 @@
         class="scroll-y">
         <v-layout
           v-scroll:#scroll-target="onScroll"
-          style="min-height: 320px; max-height: 320px;"> 
-            <ul>
+          style="min-height: 400px; max-height: 400px;"> 
+            <!-- <ul>
               <li v-for="(item, index) in result">
                 {{ item }}
                 <v-btn @click="choose(item)">choose</v-btn>
                 <v-btn @click="remove(item)">remove</v-btn>
               </li>
-            </ul>
+            </ul> -->
+
+            <v-data-table
+              :items="result"
+              class="elevation-1"
+              hide-actions
+              :headers="headers"
+              style="width: 100%; max-height: 400px;"
+              >
+              <template v-slot:items="props">
+                <td >{{ props.item.node.title }}</td>
+                <td >{{ props.item.node.description }}</td>
+                <td >{{ props.item.node.link }}</td>
+                <td >{{ props.item.node.creation_date | monthdayyear }}</td>
+                <td>
+                  <v-icon small @click="choose(props.item)">edit</v-icon>
+                  <v-icon small @click="remove(props.item)">delete</v-icon>
+                </td>
+              </template>
+            </v-data-table>
         </v-layout>
       </v-container>
     </no-ssr>
@@ -48,7 +67,14 @@ export default {
   data: () => ({
     result: [],
     events: {},
-    gosearch: ''
+    gosearch: '',
+    headers: [
+      { text: 'Title', sortable: false },
+      { text: 'Description', sortable: false },
+      { text: 'Link', sortable: false },
+      { text: 'Date Created', sortable: false },
+      { text: 'Actions', sortable: false }
+    ]
   }),
   mixins: [
     Constants,
@@ -62,12 +88,13 @@ export default {
     ...mapMutations('events', ['SET_NEW_FILTER_HISTORY', 'RESET_EVENT_STATE']),
     search () {
       this.result = []
-      this.filter = {first: 6, skip: 0}
+      this.filter = {first: 10, skip: 0}
       this.$set(this.filter, 'title', this.gosearch)
       this.get()
     },
     get () {
       let query = FETCH_EVENTS
+      console.log(this.filter)
       let find = _.find(this.filterhistory, this.filter)
       if (_.isUndefined(find)) {
         this.SET_NEW_FILTER_HISTORY(this.filter)
@@ -84,12 +111,27 @@ export default {
     choose (item) {
       this.goTo(`/editevent/${item.node.id}`)   
     },
-    async remove () {
+    remove (payload) {
       this.$apollo.mutate({
         mutation: DELETE_EVENT,
         variables: this.events,
+        update: (store, { data: { CreateUpdateEvent } }) => {
+          const todoQuery = {
+            query: FETCH_EVENTS,
+            variables: this.filter
+          }
+          let payload = {
+            node: CreateUpdateEvent.event
+          }
+          const todoData = store.readQuery(todoQuery)
+          let unitIndex = _.findIndex(todoData.all_events.edges, { node: { id: payload.node.id } })
+          this.$delete(todoData.all_events.edges, _.toInteger(unitIndex))
+          store.writeQuery({ ...todoQuery, data: payload })
+        }
       }).then(data => {
-        console.log(data)
+        let unitIndex = _.findIndex(this.result, { node: { id: payload.node.id } })
+        this.$delete(this.result, _.toInteger(unitIndex))
+        console.log('item deleted')
       }).catch(data => {
         console.log(data)
       })
@@ -97,7 +139,7 @@ export default {
     onScroll (e) {
       let target = e.target
       if (target.scrollTop + target.offsetHeight >= target.scrollHeight) {
-        this.filter.skip += 6
+        this.filter.skip += 10
         this.get()
         target.scrollTop = (target.scrollTop - 20)
       }
