@@ -114,7 +114,7 @@ export default {
     remove (payload) {
       this.$apollo.mutate({
         mutation: DELETE_EVENT,
-        variables: this.events,
+        variables: {id: payload.node.id},
         update: (store, { data: { CreateUpdateEvent } }) => {
           const todoQuery = {
             query: FETCH_EVENTS,
