@@ -7,6 +7,7 @@ export const FETCH_EVENTS = gql` query tagList ($getid: ID, $title: String, $fir
         id,
         title,
         description,
+        creation_date,
         link
       }
     }

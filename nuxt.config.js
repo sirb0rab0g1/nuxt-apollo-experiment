@@ -29,7 +29,8 @@ module.exports = {
     '~/plugins/vue-croppa.js',
     {src: '~/plugins/vue-sample-uploader.js', ssr: false},
     '~/plugins/vue-js-modal',
-    {src: '~/plugins/localStorage.js', ssr: false }
+    {src: '~/plugins/localStorage.js', ssr: false },
+    '~/plugins/filters.js'
   ],
   css: [
     '~/assets/style/app.styl',

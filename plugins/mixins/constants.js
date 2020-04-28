@@ -1,7 +1,7 @@
 export default {
   data: () => ({
     filter: {
-      first: 6,
+      first: 10,
       skip: 0,
       title: ''
     }
