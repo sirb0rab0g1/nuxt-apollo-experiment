@@ -30,7 +30,6 @@
 </template>
 
 <script>
-/* eslint-disable */
 import {
   FETCH_EVENTS,
   CREATE_UPDATE_EVENT
