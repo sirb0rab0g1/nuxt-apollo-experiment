@@ -1,7 +1,6 @@
 <template>
 <div>
   <v-card style="height: 600px;">
-    <no-ssr>
       <v-flex xs12 sm6 md3>
         <v-text-field
           label="Search"
@@ -43,7 +42,6 @@
             </v-data-table>
         </v-layout>
       </v-container>
-    </no-ssr>
   </v-card>
 
   <v-btn @click="goTo('/editevent')"> CREATE EVENT </v-btn>
