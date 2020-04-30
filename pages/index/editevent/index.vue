@@ -1,6 +1,11 @@
 <template>
   <v-flex>
     no id
+    <no-ssr>
+    <center>
+      <croppa ref="sample" :height="250" :width='250' class="mt-4"/>
+    </center>
+    </no-ssr>
     <v-flex xs12 sm6 md3>
     <v-text-field
       label="Title"
@@ -40,7 +45,8 @@ import _ from 'lodash'
 export default {
   data: () => ({
     events: {},
-    errors: {}
+    errors: {},
+    sample: {}
   }),
   mixins: [Global],
   computed: {
@@ -49,6 +55,10 @@ export default {
   methods: {
     ...mapMutations('events', ['SET_FILTER', 'RESET_EVENT_STATE']),
     post () {
+      this.$set(this.events, 'data_url', this.$refs.sample.generateDataUrl())
+      if (!_.isUndefined(this.$refs.sample.getChosenFile())) {
+        this.$set(this.events, 'file_name', _.replace(this.$refs.sample.getChosenFile().name, ' ', '_'))
+      }
       this.$apollo.mutate({
         mutation: CREATE_UPDATE_EVENT,
         variables: this.events,

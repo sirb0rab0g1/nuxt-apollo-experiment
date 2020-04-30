@@ -6,6 +6,7 @@ export const FETCH_EVENTS = gql` query tagList ($getid: ID, $title: String, $fir
       node{
         id,
         title,
+        image,
         description,
         creation_date,
         link
@@ -19,20 +20,27 @@ export const CREATE_UPDATE_EVENT = gql`
     $id: ID,
     $title: String,
     $description: String,
-    $link: String
+    $link: String,
+    $creation_date: String,
+    $data_url: String,
+    $file_name: String
   ) {
   CreateUpdateEvent(
     event_data: {
       id: $id,
-      title:$title,
-      description:$description,
-      link:$link,
+      title: $title,
+      description: $description,
+      link: $link,
+      creation_date: $creation_date,
+      data_url: $data_url,
+      file_name: $file_name
     }
   ) {
     event {
       title,
       description,
       link,
+      creation_date,
       id
     }
   }
