@@ -21,6 +21,7 @@ export const CREATE_UPDATE_EVENT = gql`
     $title: String,
     $description: String,
     $link: String,
+    $creation_date: String,
     $data_url: String,
     $file_name: String
   ) {
@@ -30,6 +31,7 @@ export const CREATE_UPDATE_EVENT = gql`
       title: $title,
       description: $description,
       link: $link,
+      creation_date: $creation_date,
       data_url: $data_url,
       file_name: $file_name
     }
@@ -38,6 +40,7 @@ export const CREATE_UPDATE_EVENT = gql`
       title,
       description,
       link,
+      creation_date,
       id
     }
   }

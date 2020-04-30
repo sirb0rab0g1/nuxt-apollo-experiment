@@ -1,31 +1,32 @@
 <template>
   <v-flex>
-    no id
-
+    <center>
+      <croppa ref="sample" :height="250" :width='250' class="mt-4"/>
+    </center>
     <v-flex xs12 sm6 md3>
     <v-text-field
       label="Title"
       v-model="events.title"
       :error-messages="errors.title"
       ></v-text-field>
-  </v-flex>
-  <v-flex xs12 sm6 md3>
+    </v-flex>
+    <v-flex xs12 sm6 md3>
     <v-text-field
       label="Description"
       v-model="events.description"
       :error-messages="errors.description"
       ></v-text-field>
-  </v-flex>
-  <v-flex xs12 sm6 md3>
+    </v-flex>
+    <v-flex xs12 sm6 md3>
     <v-text-field
       label="Link"
       v-model="events.link"
       :error-messages="errors.link"
       ></v-text-field>
-  </v-flex>
-  <v-btn @click="update">
-    update
-  </v-btn>
+    </v-flex>
+    <v-btn @click="update">
+      update
+    </v-btn>
   </v-flex>
 </template>
 
@@ -40,7 +41,8 @@ import _ from 'lodash'
 export default {
   data: () => ({
     events: {},
-    errors: {}
+    errors: {},
+    sample: {}
   }),
   mixins: [Global],
   methods: {
@@ -51,6 +53,10 @@ export default {
       })
     },
     update () {
+      this.$set(this.events, 'data_url', this.$refs.sample.generateDataUrl())
+      if (!_.isUndefined(this.$refs.sample.getChosenFile())) {
+        this.$set(this.events, 'file_name', _.replace(this.$refs.sample.getChosenFile().name, ' ', '_'))
+      }
       this.$apollo.mutate({
         mutation: CREATE_UPDATE_EVENT,
         variables: this.events,
