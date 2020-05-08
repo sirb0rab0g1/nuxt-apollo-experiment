@@ -1,7 +1,7 @@
 <template>
   <v-flex>
     {{ msg }}
-    <v-btn v-if="show">
+    <v-btn v-if="show" @click="goTo('/')">
       proceed to login screen
     </v-btn>
   </v-flex>
@@ -11,12 +11,14 @@
   import {
     VERIFY_ACCOUNT
   } from '~/plugins/mixins/queries/auth'
+  import Global from '~/plugins/mixins/global'
 
   export default {
     data: () => ({
       msg: 'validating account please wait',
       show: false
     }),
+    mixins: [Global],
     methods: {
       sendvalidationtoken () {
         let token = { token: this.$nuxt._route.params.id }
