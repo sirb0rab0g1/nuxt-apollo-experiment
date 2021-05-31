@@ -8,7 +8,10 @@ const initialState = () => {
     filterhistory: []
   }
 }
-const state = initialState()
+
+const state = () => {
+  return initialState()
+}
 
 const mutations = {
   SET_FILTER (state, payload) {

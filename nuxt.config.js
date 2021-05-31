@@ -58,6 +58,12 @@ module.exports = {
       }
     }
   },
+    /*
+  ** If you  want to use static hosting uncomment 'target: static' in order for the generate command to work properly.
+  */
+
+  // target: 'static'
+  
   /*
   ** Customize the progress bar color
   */
