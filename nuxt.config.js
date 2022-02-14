@@ -19,6 +19,7 @@ module.exports = {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
+  components: true,
   plugins: [
     '~/plugins/components.js',
     '~/plugins/events.js',
