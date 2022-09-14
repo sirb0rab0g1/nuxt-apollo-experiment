@@ -1,5 +1,7 @@
 <template>
   <v-flex>
+    <nuxtlogo />
+    <igit-tobol />
     {{ msg }}
     <v-btn v-if="show" @click="goTo('/')">
       proceed to login screen

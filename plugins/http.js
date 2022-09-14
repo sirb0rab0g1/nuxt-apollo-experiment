@@ -6,50 +6,35 @@ export const Http = axios.create({
   baseURL: process.env.API_URL
 })
 
-export const getApi = function (url, filters) {
-  return new Promise((resolve, reject) => {
-    Http.get(url, { params: filters })
-      .then(response => {
-        resolve(response.data)
-      })
-      .catch(error => {
-        reject(error.response)
-      })
-  })
+Http.interceptors.request.use(function (config) {
+  if (process.client) {
+    let token = localStorage.getItem('token')
+
+    if (token) {
+      config.headers.Authorization = `JWT ${token}`
+    }
+  }
+  return config
+}, function (error) {
+  return Promise.reject(error)
+})
+
+export const getApi = async (url, payload) => {
+  const response = await Http.get(url, payload)
+  return response
 }
 
-export const deleteApi = function (url, payload) {
-  return new Promise((resolve, reject) => {
-    Http.delete(url, payload)
-      .then(response => {
-        resolve(response.data)
-      })
-      .catch(error => {
-        reject(error.response)
-      })
-  })
+export const deleteApi = async (url, payload) => {
+  const response = await Http.delete(url, payload)
+  return response
 }
 
-export const postApi = function (url, payload) {
-  return new Promise((resolve, reject) => {
-    Http.post(url, payload)
-      .then(response => {
-        resolve(response.data)
-      })
-      .catch(error => {
-        reject(error.response)
-      })
-  })
+export const postApi = async (url, payload) => {
+  const response = await Http.post(url, payload)
+  return response
 }
 
-export const patchApi = function (url, payload) {
-  return new Promise((resolve, reject) => {
-    Http.patch(url, payload)
-      .then(response => {
-        resolve(response.data)
-      })
-      .catch(error => {
-        reject(error.response)
-      })
-  })
+export const patchApi = async (url, payload) => {
+  const response = await Http.patch(url, payload)
+  return response
 }

@@ -3,7 +3,10 @@ const initialState = () => {
     sample: {}
   }
 }
-const state = initialState()
+
+const state = () => {
+  return initialState()
+}
 
 const mutations = {
   SET_SAMPLE (state, payload) {
