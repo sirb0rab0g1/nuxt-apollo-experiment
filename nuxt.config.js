@@ -2,9 +2,12 @@ import webpack from 'webpack'
 
 const nodeExternals = require('webpack-node-externals')
 const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
-
+import { resolve } from 'path'
 
 module.exports = {
+  generate: {
+    routes: ['404']
+  },
   /*
   ** Headers of the page
   */
@@ -21,11 +24,9 @@ module.exports = {
   },
   components: true,
   plugins: [
-    '~/plugins/components.js',
     '~/plugins/events.js',
     '~/plugins/font-awesome.js',
     '~/plugins/http.js',
-    '~/plugins/vuetify.js', 
     '~/plugins/vue-smooth-picker.js',
     '~/plugins/vue-croppa.js',
     {src: '~/plugins/vue-sample-uploader.js', ssr: false},
@@ -41,6 +42,11 @@ module.exports = {
   env: {
     API_URL: 'http://localhost:8000/api' // waiting for the api xd
   },
+  // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
+  buildModules: [
+    // https://go.nuxtjs.dev/vuetify
+    '@nuxtjs/vuetify'
+  ],
   modules: [
     '@nuxtjs/pwa',
     '@nuxtjs/axios',
@@ -74,36 +80,11 @@ module.exports = {
   /*
   ** Build configuration
   */
+  // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-    transpile: [/^vuetify/],
-    plugins: [
-      new VuetifyLoaderPlugin(),
-      new webpack.ProvidePlugin({
-          '_': 'lodash',  /* see sample implementation @ GlobalToolbar.vue */
-          'moment': 'moment'
-      })
-    ],
-    extractCSS: true,
     extend (config, ctx) {
-      // Run ESLint on save
-      if (ctx.isDev && ctx.isClient) {
-        config.module.rules.push({
-          enforce: 'pre',
-          test: /\.(js|vue)$/,
-          loader: 'eslint-loader',
-          exclude: /(node_modules)/,
-          options : {
-            fix : true
-          }
-        })
-      }
-      if (process.server) {
-        config.externals = [
-          nodeExternals({
-            whitelist: [/^vuetify/]
-          })
-        ]
-      }
-    }
+      config.resolve.symlinks = false
+    },
+    postcss: null
   }
 }
