@@ -7,3 +7,8 @@ clean:
 
 local: # NEED TO INSTALL PYTHON 3
 	python lan.py
+
+clean-build:
+	rm -rf node_modules
+	rm -rf package-lock.json
+	npm install

@@ -19,6 +19,7 @@ module.exports = {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
+  components: true,
   plugins: [
     '~/plugins/components.js',
     '~/plugins/events.js',
@@ -58,6 +59,14 @@ module.exports = {
       }
     }
   },
+    /*
+  ** If you  want to use static hosting use 'target: static' in order for the generate command to work properly.
+  */
+
+  // target: 'static',
+
+  target: 'server', /* server hosting, when using build command */
+  
   /*
   ** Customize the progress bar color
   */
