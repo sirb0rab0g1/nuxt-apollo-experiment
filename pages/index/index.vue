@@ -9,14 +9,20 @@
             v-model="form.email"
             label="Email Address"
             prepend-icon="person"
-            class="px-2"/>
+            :error-messages="errors['email']"
+            class="px-2"
+            />
           <v-text-field
             outlined
             v-model="form.password"
             label="Password"
             prepend-icon="lock"
+            :append-icon="show ? 'visibility_off' : 'visibility'"
+            :type="show ? 'text' : 'password'"
+            @click:append="show = !show"
+            :error-messages="errors['password']"
             class="px-2"
-            type="password"/>
+          />
 
           <v-btn block depressed @click="login" class="white--text" color="#fbb730">
             LOGIN
@@ -57,17 +63,61 @@
 </template>
 <script>
   import Global from '~/plugins/mixins/global'
+  import { isEmpty } from 'lodash'
   export default {
     mixins: [Global],
     data: () => ({
-      form: {}
+      form: {},
+      errors: {},
+      show: false
     }),
     methods: {
       proceed () {
         this.goTo('/graphqlsample')
       },
       login () {
-        console.log(this.form)
+        // one method used in nuxt/auth is this.$auth.loginWith (Set current strategy to strategyName and attempt login.
+        // Usage varies by current strategy.)
+  
+        // if (!isEmpty(this.form.email) && !isEmpty(this.form.password)) {
+        //   this.loading = true
+        //   this.$auth.loginWith('local', {
+        //     data: {
+        //       ...this.form
+        //     }
+        //   })
+        //   .then(res => {
+        //     this.SET_USER(res.data)
+        //     localStorage.setItem('token', res.data.success)
+        //     if (res.data.user) {
+        //       // if user: false in nuxt.config.js do set user manually
+        //       this.$auth.setUser(res.data.user)
+        //       this.goTo('/dashboard')
+        //     }
+        //   })
+        //   .catch(err => {
+        //     if (err) {
+        //       this.loading = false
+        //       if (err.response) {
+        //         if (err.response.data.errors) {
+        //           this.errors = err.response.data.errors
+        //         }
+        //       } else {
+        //         console.log('err:', err)
+        //       }
+        //     }
+        //   }).finally(() => {
+        //     this.loading = false
+        //   })
+        // } else {
+        //   if (isEmpty(this.form.email)) {
+        //     this.$set(this.errors, 'email', ['Email is required'])
+        //   }
+        //   if (isEmpty(this.form.email)) {
+        //     this.$set(this.errors, 'password', ['Password is required'])
+        //   }
+        // }
+        this.goTo('/dashboard')
       },
       newLink (payload) {
         if (process.client) {
