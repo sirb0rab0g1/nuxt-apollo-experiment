@@ -42,6 +42,31 @@ module.exports = {
   env: {
     API_URL: 'http://localhost:8000/api' // waiting for the api xd
   },
+  // Axios module configuration: https://go.nuxtjs.dev/config-axios
+  axios: {
+    baseURL: process.env.API_URL // waiting for the api
+  },
+  auth: {
+    strategies: {
+      local: {
+        endpoints: {
+          login: { url: 'login', method: 'post', propertyName: 'token' },
+          // set user to false if get user is not avalailable
+          user: false,
+          // if get user is avalailable
+          // which is to create a get api and set in nuxt.config.js as follows: 
+          // user: { url: 'user', method: 'get', propertyName: 'user' }
+          logout: false
+        },
+        autoLogout: false
+      }
+    },
+    notLoggedInRedirectTo: '/login',
+    redirect: false
+  },
+  publicRuntimeConfig: {
+    baseURL: process.env.API_URL
+  },
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
     // https://go.nuxtjs.dev/vuetify

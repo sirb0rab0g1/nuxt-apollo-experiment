@@ -8,10 +8,10 @@ export const Http = axios.create({
 
 Http.interceptors.request.use(function (config) {
   if (process.client) {
-    let token = localStorage.getItem('token')
+    let token = window.localStorage.getItem('auth._token.local')
 
     if (token) {
-      config.headers.Authorization = `JWT ${token}`
+      config.headers.Authorization = `${token}`
     }
   }
   return config
